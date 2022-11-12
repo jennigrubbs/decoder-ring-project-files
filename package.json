@@ -1,36 +1,49 @@
 {
-  "name": "through",
-  "version": "2.3.8",
-  "description": "simplified stream construction",
-  "main": "index.js",
-  "scripts": {
-    "test": "set -e; for t in test/*.js; do node $t; done"
-  },
-  "devDependencies": {
-    "stream-spec": "~0.3.5",
-    "tape": "~2.3.2",
-    "from": "~0.1.3"
+  "name": "uuid",
+  "version": "3.4.0",
+  "description": "RFC4122 (v1, v4, and v5) UUIDs",
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "keywords": [
-    "stream",
-    "streams",
-    "user-streams",
-    "pipe"
+    "uuid",
+    "guid",
+    "rfc4122"
   ],
-  "author": "Dominic Tarr <dominic.tarr@gmail.com> (dominictarr.com)",
   "license": "MIT",
+  "bin": {
+    "uuid": "./bin/uuid"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "~8.2.0",
+    "@commitlint/config-conventional": "~8.2.0",
+    "eslint": "~6.4.0",
+    "husky": "~3.0.5",
+    "mocha": "6.2.0",
+    "runmd": "1.2.1",
+    "standard-version": "7.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "npm run lint && mocha test/test.js",
+    "md": "runmd --watch --output=README.md README_js.md",
+    "release": "standard-version",
+    "prepare": "runmd --output=README.md README_js.md"
+  },
+  "browser": {
+    "./lib/rng.js": "./lib/rng-browser.js",
+    "./lib/sha1.js": "./lib/sha1-browser.js",
+    "./lib/md5.js": "./lib/md5-browser.js"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dominictarr/through.git"
+    "url": "https://github.com/uuidjs/uuid.git"
   },
-  "homepage": "https://github.com/dominictarr/through",
-  "testling": {
-    "browsers": [
-      "ie/8..latest",
-      "ff/15..latest",
-      "chrome/20..latest",
-      "safari/5.1..latest"
-    ],
-    "files": "test/*.js"
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
