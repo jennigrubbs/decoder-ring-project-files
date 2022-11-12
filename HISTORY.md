@@ -1,215 +1,305 @@
-1.10.0 / 2020-03-20
-===================
-
-  * Add `:total-time` token
-  * Fix trailing space in colored status code for `dev` format
-  * deps: basic-auth@~2.0.1
-     - deps: safe-buffer@5.1.2
-  * deps: depd@~2.0.0
-    - Replace internal `eval` usage with `Function` constructor
-    - Use instance methods on `process` to check for listeners
-  * deps: on-headers@~1.0.2
-    - Fix `res.writeHead` patch missing return value
-
-1.9.1 / 2018-09-10
+1.9.1 / 2017-09-28
 ==================
 
-  * Fix using special characters in format
-  * deps: depd@~1.1.2
-    - perf: remove argument reassignment
-
-1.9.0 / 2017-09-26
-==================
-
-  * Use `res.headersSent` when available
-  * deps: basic-auth@~2.0.0
-     - Use `safe-buffer` for improved Buffer API
+  * deps: accepts@~1.3.4
+    - deps: mime-types@~2.1.16
   * deps: debug@2.6.9
-  * deps: depd@~1.1.1
-    - Remove unnecessary `Buffer` loading
+  * deps: http-errors@~1.6.2
+    - deps: depd@1.1.1
+  * deps: mime-types@~2.1.17
+    - Add new mime types
+    - deps: mime-db@~1.30.0
+  * deps: parseurl@~1.3.2
+    - perf: reduce overhead for full URLs
+    - perf: unroll the "fast-path" `RegExp`
 
-1.8.2 / 2017-05-23
+1.9.0 / 2017-05-25
 ==================
 
+  * Set `X-Content-Type-Options: nosniff` header
+  * deps: batch@0.6.1
   * deps: debug@2.6.8
-    - Fix `DEBUG_MAX_ARRAY_LENGTH`
-    - deps: ms@2.0.0
-
-1.8.1 / 2017-02-04
-==================
-
-  * deps: debug@2.6.1
-    - Fix deprecation messages in WebStorm and other editors
-    - Undeprecate `DEBUG_FD` set to `1` or `2`
-
-1.8.0 / 2017-02-04
-==================
-
-  * Fix sending unnecessary `undefined` argument to token functions
-  * deps: basic-auth@~1.1.0
-  * deps: debug@2.6.0
     - Allow colors in workers
-    - Deprecated `DEBUG_FD` environment variable
+    - Deprecated `DEBUG_FD` environment variable set to `3` or higher
+    - Fix `DEBUG_MAX_ARRAY_LENGTH`
     - Fix error when running under React Native
     - Use same color for same namespace
-    - deps: ms@0.7.2
-  * perf: enable strict mode in compiled functions
+    - deps: ms@2.0.0
+  * deps: http-errors@~1.6.1
+    - Make `message` property enumerable for `HttpError`s
+    - deps: inherits@2.0.3
+    - deps: setprototypeof@1.0.3
+    - deps: statuses@'>= 1.3.1 < 2'
+  * deps: mime-types@~2.1.15
+    - Add new mime types
+    - Add `audio/mp3`
 
-1.7.0 / 2016-02-18
+1.8.0 / 2016-06-17
 ==================
 
-  * Add `digits` argument to `response-time` token
-  * deps: depd@~1.1.0
-    - Enable strict mode in more places
-    - Support web browser loading
-  * deps: on-headers@~1.0.1
+  * Make inline file search case-insensitive
+  * deps: accepts@~1.3.3
+    - deps: mime-types@~2.1.11
+    - deps: negotiator@0.6.1
+    - perf: improve header parsing speed
+  * deps: http-errors@~1.5.0
+    - Use `setprototypeof` module to replace `__proto__` setting
+    - deps: inherits@2.0.1
+    - deps: statuses@'>= 1.3.0 < 2'
+    - perf: enable strict mode
+  * deps: mime-types@~2.1.11
+    - Add new mime types
+    - Update primary extension for `audio/mp4`
+    - deps: mime-db@~1.23.0
+
+1.7.3 / 2016-01-24
+==================
+
+  * deps: accepts@~1.2.13
+    - deps: mime-types@~2.1.6
+  * deps: batch@0.5.3
+    - Fix invalid dependency for browserify
+  * deps: escape-html@~1.0.3
+    - perf: enable strict mode
+    - perf: optimize string replacement
+    - perf: use faster string coercion
+  * deps: mime-types@~2.1.9
+    - Add new mime types
+  * deps: parseurl@~1.3.1
     - perf: enable strict mode
 
-1.6.1 / 2015-07-03
+1.7.2 / 2015-07-30
 ==================
 
-  * deps: basic-auth@~1.0.3
+  * deps: accepts@~1.2.12
+    - deps: mime-types@~2.1.4
+  * deps: mime-types@~2.1.4
+    - Add new mime types
 
-1.6.0 / 2015-06-12
+1.7.1 / 2015-07-05
 ==================
 
-  * Add `morgan.compile(format)` export
-  * Do not color 1xx status codes in `dev` format
-  * Fix `response-time` token to not include response latency
-  * Fix `status` token incorrectly displaying before response in `dev` format
-  * Fix token return values to be `undefined` or a string
-  * Improve representation of multiple headers in `req` and `res` tokens
-  * Use `res.getHeader` in `res` token
-  * deps: basic-auth@~1.0.2
+  * deps: accepts@~1.2.10
+    - deps: mime-types@~2.1.2
+  * deps: mime-types@~2.1.2
+    - Add new mime types
+
+1.7.0 / 2015-06-15
+==================
+
+  * Accept `function` value for `template` option
+  * Send non-chunked response for `OPTIONS`
+  * Stat parent directory when necessary
+  * Use `Date.prototype.toLocaleDateString` to format date
+  * deps: accepts@~1.2.9
+    - deps: mime-types@~2.1.1
+    - deps: negotiator@0.5.3
+    - perf: avoid argument reassignment & argument slice
+    - perf: avoid negotiator recursive construction
     - perf: enable strict mode
-    - perf: hoist regular expression
-    - perf: parse with regular expressions
-    - perf: remove argument reassignment
-  * deps: on-finished@~2.3.0
-    - Add defined behavior for HTTP `CONNECT` requests
-    - Add defined behavior for HTTP `Upgrade` requests
-    - deps: ee-first@1.1.1
-  * pref: enable strict mode
-  * pref: reduce function closure scopes
-  * pref: remove dynamic compile on every request for `dev` format
-  * pref: remove an argument reassignment
-  * pref: skip function call without `skip` option
+    - perf: remove unnecessary bitwise operator
+  * deps: escape-html@1.0.2
+  * deps: mime-types@~2.1.1
+    - Add new mime types
+  * perf: enable strict mode
+  * perf: remove argument reassignment
 
-1.5.3 / 2015-05-10
+1.6.4 / 2015-05-12
 ==================
 
-  * deps: basic-auth@~1.0.1
+  * deps: accepts@~1.2.7
+    - deps: mime-types@~2.0.11
+    - deps: negotiator@0.5.3
   * deps: debug@~2.2.0
     - deps: ms@0.7.1
-  * deps: depd@~1.0.1
-  * deps: on-finished@~2.2.1
-    - Fix `isFinished(req)` when data buffered
+  * deps: mime-types@~2.0.11
+    - Add new mime types
 
-1.5.2 / 2015-03-15
+1.6.3 / 2015-03-13
 ==================
 
+  * Properly escape file names in HTML
+  * deps: accepts@~1.2.5
+    - deps: mime-types@~2.0.10
   * deps: debug@~2.1.3
     - Fix high intensity foreground color for bold
     - deps: ms@0.7.0
+  * deps: escape-html@1.0.1
+  * deps: mime-types@~2.0.10
+    - Add new mime types
 
-1.5.1 / 2014-12-31
+1.6.2 / 2015-02-16
 ==================
 
+  * deps: accepts@~1.2.4
+    - deps: mime-types@~2.0.9
+    - deps: negotiator@0.5.1
+  * deps: http-errors@~1.3.1
+    - Construct errors using defined constructors from `createError`
+    - Fix error names that are not identifiers
+    - Set a meaningful `name` property on constructed errors
+  * deps: mime-types@~2.0.9
+    - Add new mime types
+    - deps: mime-db@~1.7.0
+
+1.6.1 / 2015-01-31
+==================
+
+  * deps: accepts@~1.2.3
+    - deps: mime-types@~2.0.8
+  * deps: mime-types@~2.0.8
+    - Add new mime types
+    - deps: mime-db@~1.6.0
+
+1.6.0 / 2015-01-01
+==================
+
+  * Add link to root directory
+  * deps: accepts@~1.2.2
+    - deps: mime-types@~2.0.7
+    - deps: negotiator@0.5.0
+  * deps: batch@0.5.2
   * deps: debug@~2.1.1
-  * deps: on-finished@~2.2.0
+  * deps: mime-types@~2.0.7
+    - Add new mime types
+    - Fix missing extensions
+    - Fix various invalid MIME type entries
+    - Remove example template MIME types
+    - deps: mime-db@~1.5.0
 
-1.5.0 / 2014-11-06
+1.5.3 / 2014-12-10
 ==================
 
-  * Add multiple date formats
-    - `clf` for the common log format
-    - `iso` for the common ISO 8601 date time format
-    - `web` for the common RFC 1123 date time format
-  * Deprecate `buffer` option
-  * Fix date format in `common` and `combined` formats
-  * Fix token arguments to accept values with `"`
+  * deps: accepts@~1.1.4
+    - deps: mime-types@~2.0.4
+  * deps: http-errors@~1.2.8
+    - Fix stack trace from exported function
+  * deps: mime-types@~2.0.4
+    - Add new mime types
+    - deps: mime-db@~1.3.0
 
-1.4.1 / 2014-10-22
+1.5.2 / 2014-12-03
 ==================
 
-  * deps: on-finished@~2.1.1
-    - Fix handling of pipelined requests
+  * Fix icon name background alignment on mobile view
 
-1.4.0 / 2014-10-16
+1.5.1 / 2014-11-22
+==================
+
+  * deps: accepts@~1.1.3
+    - deps: mime-types@~2.0.3
+  * deps: mime-types@~2.0.3
+    - Add new mime types
+    - deps: mime-db@~1.2.0
+
+1.5.0 / 2014-10-16
+==================
+
+  * Create errors with `http-errors`
+  * deps: debug@~2.1.0
+    - Implement `DEBUG_FD` env variable support
+  * deps: mime-types@~2.0.2
+    - deps: mime-db@~1.1.0
+
+1.4.1 / 2014-10-15
+==================
+
+  * deps: accepts@~1.1.2
+    - Fix error when media type has invalid parameter
+    - deps: negotiator@0.4.9
+
+1.4.0 / 2014-10-03
+==================
+
+  * Add `dir` argument to `filter` function
+  * Support using tokens multiple times
+
+1.3.1 / 2014-10-01
+==================
+
+  * Fix incorrect 403 on Windows and Node.js 0.11
+  * deps: accepts@~1.1.1
+    - deps: mime-types@~2.0.2
+    - deps: negotiator@0.4.8
+
+1.3.0 / 2014-09-20
+==================
+
+  * Add icon for mkv files
+  * Lookup icon by mime type for greater icon support
+
+1.2.1 / 2014-09-05
+==================
+
+  * deps: accepts@~1.1.0
+  * deps: debug@~2.0.0
+
+1.2.0 / 2014-08-25
 ==================
 
   * Add `debug` messages
-  * deps: depd@~1.0.0
+  * Resolve relative paths at middleware setup
 
-1.3.2 / 2014-09-27
+1.1.6 / 2014-08-10
 ==================
 
-  * Fix `req.ip` integration when `immediate: false`
+  * Fix URL parsing
+  * deps: parseurl@~1.3.0
 
-1.3.1 / 2014-09-14
+1.1.5 / 2014-07-27
 ==================
 
-  * Remove un-used `bytes` dependency
-  * deps: depd@0.4.5
+  * Fix Content-Length calculation for multi-byte file names
+  * deps: accepts@~1.0.7
+    - deps: negotiator@0.4.7
 
-1.3.0 / 2014-09-01
+1.1.4 / 2014-06-20
 ==================
 
-  * Assert if `format` is not a function or string
+  * deps: accepts@~1.0.5
 
-1.2.3 / 2014-08-16
+1.1.3 / 2014-06-20
 ==================
 
-  * deps: on-finished@2.1.0
+  * deps: accepts@~1.0.4
+    - use `mime-types`
 
-1.2.2 / 2014-07-27
+1.1.2 / 2014-06-19
 ==================
 
-  * deps: depd@0.4.4
-    - Work-around v8 generating empty stack traces
+  * deps: batch@0.5.1
 
-1.2.1 / 2014-07-26
+1.1.1 / 2014-06-11
 ==================
 
-  * deps: depd@0.4.3
-    - Fix exception when global `Error.stackTraceLimit` is too low
+  * deps: accepts@1.0.3
 
-1.2.0 / 2014-07-19
+1.1.0 / 2014-05-29
 ==================
 
-  * Add `:remote-user` token
-  * Add `combined` log format
-  * Add `common` log format
-  * Add `morgan(format, options)` function signature
-  * Deprecate `default` format -- use `combined` format instead
-  * Deprecate not providing a format
-  * Remove non-standard grey color from `dev` format
+  * Fix content negotiation when no `Accept` header
+  * Properly support all HTTP methods
+  * Support vanilla node.js http servers
+  * Treat `ENAMETOOLONG` as code 414
+  * Use accepts for negotiation
 
-1.1.1 / 2014-05-20
+1.0.3 / 2014-05-20
 ==================
 
-  * simplify method to get remote address
+  * Fix error from non-statable files in HTML view
 
-1.1.0 / 2014-05-18
+1.0.2 / 2014-04-28
 ==================
 
-  * "dev" format will use same tokens as other formats
-  * `:response-time` token is now empty when immediate used
-  * `:response-time` token is now monotonic
-  * `:response-time` token has precision to 1 μs
-  * fix `:status` + immediate output in node.js 0.8
-  * improve `buffer` option to prevent indefinite event loop holding
-  * deps: bytes@1.0.0
-    - add negative support
+  * Add `stylesheet` option
+  * deps: negotiator@0.4.3
 
-1.0.1 / 2014-05-04
+1.0.1 / 2014-03-05
 ==================
 
-  * Make buffer unique per morgan instance
-  * deps: bytes@0.3.0
-    * added terabyte support
+  * deps: negotiator@0.4.2
 
-1.0.0 / 2014-02-08
+1.0.0 / 2014-03-05
 ==================
 
-  * Initial release
+  * Genesis from connect
