@@ -1,311 +1,193 @@
-# faye-websocket
+# is-descriptor [![NPM version](https://img.shields.io/npm/v/is-descriptor.svg?style=flat)](https://www.npmjs.com/package/is-descriptor) [![NPM monthly downloads](https://img.shields.io/npm/dm/is-descriptor.svg?style=flat)](https://npmjs.org/package/is-descriptor) [![NPM total downloads](https://img.shields.io/npm/dt/is-descriptor.svg?style=flat)](https://npmjs.org/package/is-descriptor) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/is-descriptor.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/is-descriptor)
 
-This is a general-purpose WebSocket implementation extracted from the
-[Faye](http://faye.jcoglan.com) project. It provides classes for easily building
-WebSocket servers and clients in Node. It does not provide a server itself, but
-rather makes it easy to handle WebSocket connections within an existing
-[Node](https://nodejs.org/) application. It does not provide any abstraction
-other than the standard [WebSocket
-API](https://html.spec.whatwg.org/multipage/comms.html#network).
+> Returns true if a value has the characteristics of a valid JavaScript descriptor. Works for data descriptors and accessor descriptors.
 
-It also provides an abstraction for handling
-[EventSource](https://html.spec.whatwg.org/multipage/comms.html#server-sent-events)
-connections, which are one-way connections that allow the server to push data to
-the client. They are based on streaming HTTP responses and can be easier to access
-via proxies than WebSockets.
+## Install
 
+Install with [npm](https://www.npmjs.com/):
 
-## Installation
-
-```
-$ npm install faye-websocket
+```sh
+$ npm install --save is-descriptor
 ```
 
-
-## Handling WebSocket connections in Node
-
-You can handle WebSockets on the server side by listening for HTTP Upgrade
-requests, and creating a new socket for the request. This socket object exposes
-the usual WebSocket methods for receiving and sending messages. For example this
-is how you'd implement an echo server:
+## Usage
 
 ```js
-var WebSocket = require('faye-websocket'),
-    http      = require('http');
+var isDescriptor = require('is-descriptor');
 
-var server = http.createServer();
+isDescriptor({value: 'foo'})
+//=> true
+isDescriptor({get: function(){}, set: function(){}})
+//=> true
+isDescriptor({get: 'foo', set: function(){}})
+//=> false
+```
 
-server.on('upgrade', function(request, socket, body) {
-  if (WebSocket.isWebSocket(request)) {
-    var ws = new WebSocket(request, socket, body);
+You may also check for a descriptor by passing an object as the first argument and property name (`string`) as the second argument.
 
-    ws.on('message', function(event) {
-      ws.send(event.data);
-    });
+```js
+var obj = {};
+obj.foo = 'abc';
 
-    ws.on('close', function(event) {
-      console.log('close', event.code, event.reason);
-      ws = null;
-    });
-  }
+Object.defineProperty(obj, 'bar', {
+  value: 'xyz'
 });
 
-server.listen(8000);
+isDescriptor(obj, 'foo');
+//=> true
+isDescriptor(obj, 'bar');
+//=> true
 ```
 
-`WebSocket` objects are also duplex streams, so you could replace the
-`ws.on('message', ...)` line with:
+## Examples
+
+### value type
+
+`false` when not an object
 
 ```js
-    ws.pipe(ws);
+isDescriptor('a');
+//=> false
+isDescriptor(null);
+//=> false
+isDescriptor([]);
+//=> false
 ```
 
-Note that under certain circumstances (notably a draft-76 client connecting
-through an HTTP proxy), the WebSocket handshake will not be complete after you
-call `new WebSocket()` because the server will not have received the entire
-handshake from the client yet. In this case, calls to `ws.send()` will buffer
-the message in memory until the handshake is complete, at which point any
-buffered messages will be sent to the client.
+### data descriptor
 
-If you need to detect when the WebSocket handshake is complete, you can use the
-`onopen` event.
-
-If the connection's protocol version supports it, you can call `ws.ping()` to
-send a ping message and wait for the client's response. This method takes a
-message string, and an optional callback that fires when a matching pong message
-is received. It returns `true` if and only if a ping message was sent. If the
-client does not support ping/pong, this method sends no data and returns
-`false`.
+`true` when the object has valid properties with valid values.
 
 ```js
-ws.ping('Mic check, one, two', function() {
-  // fires when pong is received
-});
+isDescriptor({value: 'foo'});
+//=> true
+isDescriptor({value: noop});
+//=> true
 ```
 
-
-## Using the WebSocket client
-
-The client supports both the plain-text `ws` protocol and the encrypted `wss`
-protocol, and has exactly the same interface as a socket you would use in a web
-browser. On the wire it identifies itself as `hybi-13`.
+`false` when the object has invalid properties
 
 ```js
-var WebSocket = require('faye-websocket'),
-    ws        = new WebSocket.Client('ws://www.example.com/');
-
-ws.on('open', function(event) {
-  console.log('open');
-  ws.send('Hello, world!');
-});
-
-ws.on('message', function(event) {
-  console.log('message', event.data);
-});
-
-ws.on('close', function(event) {
-  console.log('close', event.code, event.reason);
-  ws = null;
-});
+isDescriptor({value: 'foo', bar: 'baz'});
+//=> false
+isDescriptor({value: 'foo', bar: 'baz'});
+//=> false
+isDescriptor({value: 'foo', get: noop});
+//=> false
+isDescriptor({get: noop, value: noop});
+//=> false
 ```
 
-The WebSocket client also lets you inspect the status and headers of the
-handshake response via its `statusCode` and `headers` properties.
-
-To connect via a proxy, set the `proxy` option to the HTTP origin of the proxy,
-including any authorization information, custom headers and TLS config you
-require. Only the `origin` setting is required.
+`false` when a value is not the correct type
 
 ```js
-var ws = new WebSocket.Client('ws://www.example.com/', [], {
-  proxy: {
-    origin:  'http://username:password@proxy.example.com',
-    headers: { 'User-Agent': 'node' },
-    tls:     { cert: fs.readFileSync('client.crt') }
-  }
-});
+isDescriptor({value: 'foo', enumerable: 'foo'});
+//=> false
+isDescriptor({value: 'foo', configurable: 'foo'});
+//=> false
+isDescriptor({value: 'foo', writable: 'foo'});
+//=> false
 ```
 
-The `tls` value is an object that will be passed to
-[`tls.connect()`](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback).
+### accessor descriptor
 
-
-## Subprotocol negotiation
-
-The WebSocket protocol allows peers to select and identify the application
-protocol to use over the connection. On the client side, you can set which
-protocols the client accepts by passing a list of protocol names when you
-construct the socket:
+`true` when the object has valid properties with valid values.
 
 ```js
-var ws = new WebSocket.Client('ws://www.example.com/', ['irc', 'amqp']);
+isDescriptor({get: noop, set: noop});
+//=> true
+isDescriptor({get: noop});
+//=> true
+isDescriptor({set: noop});
+//=> true
 ```
 
-On the server side, you can likewise pass in the list of protocols the server
-supports after the other constructor arguments:
+`false` when the object has invalid properties
 
 ```js
-var ws = new WebSocket(request, socket, body, ['irc', 'amqp']);
+isDescriptor({get: noop, set: noop, bar: 'baz'});
+//=> false
+isDescriptor({get: noop, writable: true});
+//=> false
+isDescriptor({get: noop, value: true});
+//=> false
 ```
 
-If the client and server agree on a protocol, both the client- and server-side
-socket objects expose the selected protocol through the `ws.protocol` property.
-
-
-## Protocol extensions
-
-faye-websocket is based on the
-[websocket-extensions](https://github.com/faye/websocket-extensions-node)
-framework that allows extensions to be negotiated via the
-`Sec-WebSocket-Extensions` header. To add extensions to a connection, pass an
-array of extensions to the `:extensions` option. For example, to add
-[permessage-deflate](https://github.com/faye/permessage-deflate-node):
+`false` when an accessor is not a function
 
 ```js
-var deflate = require('permessage-deflate');
-
-var ws = new WebSocket(request, socket, body, [], { extensions: [deflate] });
+isDescriptor({get: noop, set: 'baz'});
+//=> false
+isDescriptor({get: 'foo', set: noop});
+//=> false
+isDescriptor({get: 'foo', bar: 'baz'});
+//=> false
+isDescriptor({get: 'foo', set: 'baz'});
+//=> false
 ```
 
-
-## Initialization options
-
-Both the server- and client-side classes allow an options object to be passed in
-at initialization time, for example:
+`false` when a value is not the correct type
 
 ```js
-var ws = new WebSocket(request, socket, body, protocols, options);
-var ws = new WebSocket.Client(url, protocols, options);
+isDescriptor({get: noop, set: noop, enumerable: 'foo'});
+//=> false
+isDescriptor({set: noop, configurable: 'foo'});
+//=> false
+isDescriptor({get: noop, configurable: 'foo'});
+//=> false
 ```
 
-`protocols` is an array of subprotocols as described above, or `null`.
-`options` is an optional object containing any of these fields:
+## About
 
-- `extensions` - an array of
-  [websocket-extensions](https://github.com/faye/websocket-extensions-node)
-  compatible extensions, as described above
-- `headers` - an object containing key-value pairs representing HTTP headers to
-  be sent during the handshake process
-- `maxLength` - the maximum allowed size of incoming message frames, in bytes.
-  The default value is `2^26 - 1`, or 1 byte short of 64 MiB.
-- `ping` - an integer that sets how often the WebSocket should send ping frames,
-  measured in seconds
+### Related projects
 
-The client accepts some additional options:
+* [is-accessor-descriptor](https://www.npmjs.com/package/is-accessor-descriptor): Returns true if a value has the characteristics of a valid JavaScript accessor descriptor. | [homepage](https://github.com/jonschlinkert/is-accessor-descriptor "Returns true if a value has the characteristics of a valid JavaScript accessor descriptor.")
+* [is-data-descriptor](https://www.npmjs.com/package/is-data-descriptor): Returns true if a value has the characteristics of a valid JavaScript data descriptor. | [homepage](https://github.com/jonschlinkert/is-data-descriptor "Returns true if a value has the characteristics of a valid JavaScript data descriptor.")
+* [is-descriptor](https://www.npmjs.com/package/is-descriptor): Returns true if a value has the characteristics of a valid JavaScript descriptor. Works for… [more](https://github.com/jonschlinkert/is-descriptor) | [homepage](https://github.com/jonschlinkert/is-descriptor "Returns true if a value has the characteristics of a valid JavaScript descriptor. Works for data descriptors and accessor descriptors.")
+* [isobject](https://www.npmjs.com/package/isobject): Returns true if the value is an object and not an array or null. | [homepage](https://github.com/jonschlinkert/isobject "Returns true if the value is an object and not an array or null.")
 
-- `proxy` - settings for a proxy as described above
-- `net` - an object containing settings for the origin server that will be
-  passed to
-  [`net.connect()`](https://nodejs.org/api/net.html#net_socket_connect_options_connectlistener)
-- `tls` - an object containing TLS settings for the origin server, this will be
-  passed to
-  [`tls.connect()`](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback)
-- `ca` - (legacy) a shorthand for passing `{ tls: { ca: value } }`
+### Contributing
 
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
 
-## WebSocket API
+### Contributors
 
-Both server- and client-side `WebSocket` objects support the following API.
+| **Commits** | **Contributor** | 
+| --- | --- |
+| 24 | [jonschlinkert](https://github.com/jonschlinkert) |
+| 1 | [doowb](https://github.com/doowb) |
+| 1 | [wtgtybhertgeghgtwtg](https://github.com/wtgtybhertgeghgtwtg) |
 
-- **`on('open', function(event) {})`** fires when the socket connection is
-  established. Event has no attributes.
-- **`on('message', function(event) {})`** fires when the socket receives a
-  message. Event has one attribute, **`data`**, which is either a `String` (for
-  text frames) or a `Buffer` (for binary frames).
-- **`on('error', function(event) {})`** fires when there is a protocol error due
-  to bad data sent by the other peer. This event is purely informational, you do
-  not need to implement error recover.
-- **`on('close', function(event) {})`** fires when either the client or the
-  server closes the connection. Event has two optional attributes, **`code`**
-  and **`reason`**, that expose the status code and message sent by the peer
-  that closed the connection.
-- **`send(message)`** accepts either a `String` or a `Buffer` and sends a text
-  or binary message over the connection to the other peer.
-- **`ping(message, function() {})`** sends a ping frame with an optional message
-  and fires the callback when a matching pong is received.
-- **`close(code, reason)`** closes the connection, sending the given status code
-  and reason text, both of which are optional.
-- **`version`** is a string containing the version of the `WebSocket` protocol
-  the connection is using.
-- **`protocol`** is a string (which may be empty) identifying the subprotocol
-  the socket is using.
+### Building docs
 
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
 
-## Handling EventSource connections in Node
+To generate the readme, run the following command:
 
-EventSource connections provide a very similar interface, although because they
-only allow the server to send data to the client, there is no `onmessage` API.
-EventSource allows the server to push text messages to the client, where each
-message has an optional event-type and ID.
-
-```js
-var WebSocket   = require('faye-websocket'),
-    EventSource = WebSocket.EventSource,
-    http        = require('http');
-
-var server = http.createServer();
-
-server.on('request', function(request, response) {
-  if (EventSource.isEventSource(request)) {
-    var es = new EventSource(request, response);
-    console.log('open', es.url, es.lastEventId);
-
-    // Periodically send messages
-    var loop = setInterval(function() { es.send('Hello') }, 1000);
-
-    es.on('close', function() {
-      clearInterval(loop);
-      es = null;
-    });
-
-  } else {
-    // Normal HTTP request
-    response.writeHead(200, { 'Content-Type': 'text/plain' });
-    response.end('Hello');
-  }
-});
-
-server.listen(8000);
+```sh
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
 ```
 
-The `send` method takes two optional parameters, `event` and `id`. The default
-event-type is `'message'` with no ID. For example, to send a `notification`
-event with ID `99`:
+### Running tests
 
-```js
-es.send('Breaking News!', { event: 'notification', id: '99' });
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
+
+```sh
+$ npm install && npm test
 ```
 
-The `EventSource` object exposes the following properties:
+### Author
 
-- **`url`** is a string containing the URL the client used to create the
-  EventSource.
-- **`lastEventId`** is a string containing the last event ID received by the
-  client. You can use this when the client reconnects after a dropped connection
-  to determine which messages need resending.
+**Jon Schlinkert**
 
-When you initialize an EventSource with ` new EventSource()`, you can pass
-configuration options after the `response` parameter. Available options are:
+* [github/jonschlinkert](https://github.com/jonschlinkert)
+* [twitter/jonschlinkert](https://twitter.com/jonschlinkert)
 
-- **`headers`** is an object containing custom headers to be set on the
-  EventSource response.
-- **`retry`** is a number that tells the client how long (in seconds) it should
-  wait after a dropped connection before attempting to reconnect.
-- **`ping`** is a number that tells the server how often (in seconds) to send
-  'ping' packets to the client to keep the connection open, to defeat timeouts
-  set by proxies. The client will ignore these messages.
+### License
 
-For example, this creates a connection that allows access from any origin, pings
-every 15 seconds and is retryable every 10 seconds if the connection is broken:
+Copyright © 2017, [Jon Schlinkert](https://github.com/jonschlinkert).
+Released under the [MIT License](LICENSE).
 
-```js
-var es = new EventSource(request, response, {
-  headers: { 'Access-Control-Allow-Origin': '*' },
-  ping:    15,
-  retry:   10
-});
-```
+***
 
-You can send a ping message at any time by calling `es.ping()`. Unlike
-WebSocket, the client does not send a response to this; it is merely to send
-some data over the wire to keep the connection alive.
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on July 22, 2017._
