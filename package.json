@@ -1,49 +1,62 @@
 {
-  "name": "uuid",
-  "version": "3.4.0",
-  "description": "RFC4122 (v1, v4, and v5) UUIDs",
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "keywords": [
-    "uuid",
-    "guid",
-    "rfc4122"
-  ],
-  "license": "MIT",
-  "bin": {
-    "uuid": "./bin/uuid"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "~8.2.0",
-    "@commitlint/config-conventional": "~8.2.0",
-    "eslint": "~6.4.0",
-    "husky": "~3.0.5",
-    "mocha": "6.2.0",
-    "runmd": "1.2.1",
-    "standard-version": "7.0.0"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "test": "npm run lint && mocha test/test.js",
-    "md": "runmd --watch --output=README.md README_js.md",
-    "release": "standard-version",
-    "prepare": "runmd --output=README.md README_js.md"
-  },
-  "browser": {
-    "./lib/rng.js": "./lib/rng-browser.js",
-    "./lib/sha1.js": "./lib/sha1-browser.js",
-    "./lib/md5.js": "./lib/md5-browser.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/uuidjs/uuid.git"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  }
+	"name": "wrap-ansi",
+	"version": "7.0.0",
+	"description": "Wordwrap a string with ANSI escape codes",
+	"license": "MIT",
+	"repository": "chalk/wrap-ansi",
+	"funding": "https://github.com/chalk/wrap-ansi?sponsor=1",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "https://sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=10"
+	},
+	"scripts": {
+		"test": "xo && nyc ava"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"wrap",
+		"break",
+		"wordwrap",
+		"wordbreak",
+		"linewrap",
+		"ansi",
+		"styles",
+		"color",
+		"colour",
+		"colors",
+		"terminal",
+		"console",
+		"cli",
+		"string",
+		"tty",
+		"escape",
+		"formatting",
+		"rgb",
+		"256",
+		"shell",
+		"xterm",
+		"log",
+		"logging",
+		"command-line",
+		"text"
+	],
+	"dependencies": {
+		"ansi-styles": "^4.0.0",
+		"string-width": "^4.1.0",
+		"strip-ansi": "^6.0.0"
+	},
+	"devDependencies": {
+		"ava": "^2.1.0",
+		"chalk": "^4.0.0",
+		"coveralls": "^3.0.3",
+		"has-ansi": "^4.0.0",
+		"nyc": "^15.0.1",
+		"xo": "^0.29.1"
+	}
 }
